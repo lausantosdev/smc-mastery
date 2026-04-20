@@ -1,0 +1,44 @@
+.challenge-hud {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  gap: var(--space-4);
+}
+.hud-left, .hud-right { display: flex; align-items: center; gap: var(--space-3); }
+.hud-center { display: flex; align-items: center; gap: var(--space-3); flex: 1; justify-content: center; }
+.hud-label { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+.hud-progress { font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); }
+.hud-lives { display: flex; gap: 4px; }
+.hud-heart { font-size: 1rem; transition: all 0.3s; }
+.hud-heart.lost { filter: grayscale(1) opacity(0.3); }
+.hud-score { font-size: 0.85rem; font-weight: 700; color: var(--green); }
+
+.challenge-active { display: flex; flex-direction: column; gap: var(--space-5); max-width: 720px; margin: 0 auto; }
+.challenge-question-card { display: flex; flex-direction: column; gap: var(--space-5); }
+
+/* Setup */
+.challenge-setup { display: flex; flex-direction: column; gap: var(--space-6); }
+.challenge-blocks-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+
+.challenge-block-card { display: flex; flex-direction: column; gap: var(--space-4); }
+.challenge-block-card.locked { opacity: 0.6; }
+
+.cb-header { display: flex; align-items: flex-start; gap: var(--space-4); }
+.cb-emoji { font-size: 2.5rem; line-height: 1; flex-shrink: 0; }
+.cb-header h3 { margin-bottom: 4px; }
+
+.cb-concepts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.cb-stats { display: flex; gap: var(--space-4); flex-wrap: wrap; }
+.cb-stat { font-size: 0.8rem; color: var(--text-muted); }
+
+.cb-locked-msg { font-size: 0.82rem; color: var(--text-muted); padding: var(--space-3); background: var(--bg-elevated); border-radius: var(--radius-md); text-align: center; }
+
+/* Result */
+.challenge-result { display: flex; flex-direction: column; align-items: center; gap: var(--space-6); max-width: 480px; margin: var(--space-10) auto; text-align: center; }
+
+@media (max-width: 768px) {
+  .challenge-blocks-grid { grid-template-columns: 1fr; }
+  .hud-center { display: none; }
+}
