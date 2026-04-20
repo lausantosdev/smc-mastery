@@ -135,7 +135,6 @@ export const useLearningStore = create<LearningStore>()(
         totalXP: 0,
         streak: 0,
         lastActivityDate: today(),
-        lastActivityDate: today(),
         joinDate: today(),
       },
 
