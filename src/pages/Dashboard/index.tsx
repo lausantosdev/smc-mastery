@@ -26,7 +26,11 @@ const STUDY_STEPS = [
 
 export function Dashboard() {
   const [studyOpen, setStudyOpen] = useState(false);
-  const { progress, getConceptProgress, getGlobalMasteryScore, getDueFlashcards } = useLearningStore();
+  const [showSync, setShowSync] = useState(false);
+  const [syncCode, setSyncCode] = useState('');
+  const [syncMsg, setSyncMsg] = useState('');
+  
+  const { progress, getConceptProgress, getGlobalMasteryScore, getDueFlashcards, exportData, importData } = useLearningStore();
   const conceptIds = ALL_CONCEPTS.map((c) => c.id);
   const globalScore = getGlobalMasteryScore(conceptIds);
   const dueCards = getDueFlashcards();
@@ -59,6 +63,9 @@ export function Dashboard() {
           <p>Domine o Smart Money Concepts passo a passo</p>
         </div>
         <div className="dash-header-actions">
+          <button className="btn btn-ghost" onClick={() => setShowSync(!showSync)} title="Sincronizar Progresso">
+            {showSync ? 'Fechar 📂' : 'Sincronizar Dispositivos 📂'}
+          </button>
           {dueCards.length > 0 && (
             <Link to="/flashcards" className="btn btn-primary">
               🃏 Revisar {dueCards.length} flashcard{dueCards.length > 1 ? 's' : ''}
@@ -69,6 +76,54 @@ export function Dashboard() {
           </Link>
         </div>
       </div>
+
+      {/* Sync Manager */}
+      {showSync && (
+        <div className="card highlight-box highlight-blue" style={{marginBottom: 'var(--space-4)'}}>
+          <h3 style={{marginBottom: 'var(--space-2)'}}>💾 Transferência Dispositivo para Dispositivo</h3>
+          <p style={{fontSize: '0.9rem', marginBottom: 'var(--space-3)'}}>
+            Exporte seu código no celular e cole aqui para baixar seu progresso (ou vice-versa).
+          </p>
+          <div className="flex gap-2" style={{marginBottom: 'var(--space-3)', flexWrap: 'wrap'}}>
+            <button className="btn btn-secondary" onClick={() => {
+              const code = exportData();
+              const encoded = btoa(code); // Encode to base64 so it's a cleaner string to send via Whatsapp
+              navigator.clipboard.writeText(encoded).then(() => {
+                setSyncMsg('✅ Código copiado para a área de transferência! Envie para o seu outro aparelho e cole lá. (Pode demorar um pouco se o Safari pedir confirmação)');
+              }).catch(() => setSyncMsg('❌ Erro ao copiar.'));
+              setTimeout(() => setSyncMsg(''), 4000);
+            }}>
+              Copiar Código Deste Aparelho
+            </button>
+            <input 
+              type="text" 
+              className="recall-textarea" 
+              style={{flex: 1, minWidth: '200px', height: '40px', padding: '0 12px', minHeight: 'unset', margin: 0}} 
+              placeholder="Cole o código mágico aqui..." 
+              value={syncCode}
+              onChange={(e) => setSyncCode(e.target.value)}
+            />
+            <button className="btn btn-primary" disabled={!syncCode} onClick={() => {
+              try {
+                const decoded = atob(syncCode.trim());
+                const ok = importData(decoded);
+                if (ok) {
+                  setSyncMsg('✅ Progresso importado com Sucesso!');
+                  setSyncCode('');
+                  setTimeout(() => { setSyncMsg(''); setShowSync(false); }, 3000);
+                } else {
+                  setSyncMsg('❌ Código inválido ou corrompido.');
+                }
+              } catch (e) {
+                setSyncMsg('❌ Formato de código inválido.');
+              }
+            }}>
+              Importar Progresso
+            </button>
+          </div>
+          {syncMsg && <div style={{fontSize: '0.85rem', fontWeight: 500, color: syncMsg.includes('✅') ? 'var(--green)' : 'var(--red)'}}>{syncMsg}</div>}
+        </div>
+      )}
 
       {/* Study Guide */}
       <div className="study-guide-card">

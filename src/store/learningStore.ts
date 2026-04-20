@@ -119,6 +119,10 @@ interface LearningStore {
   getFlashcardProgress: (flashcardId: string) => FlashcardProgress;
   getGlobalMasteryScore: (conceptIds: string[]) => number;
   getCategoryMastery: (conceptIds: string[], category: string) => number;
+  
+  // Data Management
+  exportData: () => string;
+  importData: (dataStr: string) => boolean;
 }
 
 export const useLearningStore = create<LearningStore>()(
@@ -131,7 +135,27 @@ export const useLearningStore = create<LearningStore>()(
         totalXP: 0,
         streak: 0,
         lastActivityDate: today(),
+        lastActivityDate: today(),
         joinDate: today(),
+      },
+
+      // ── Dados / Sincronização ────────────────────────
+
+      exportData: () => {
+        return JSON.stringify(get().progress);
+      },
+
+      importData: (dataStr) => {
+        try {
+          const parsed = JSON.parse(dataStr);
+          if (parsed && typeof parsed === 'object' && 'totalXP' in parsed && 'conceptProgress' in parsed) {
+            set({ progress: parsed });
+            return true;
+          }
+        } catch (e) {
+          // console.error("Invalid progress data", e);
+        }
+        return false;
       },
 
       // ── Conceitos ──────────────────────────────
